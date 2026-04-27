@@ -873,6 +873,15 @@ a {
 }
 
 @media (max-width: 768px) {
+  .mantine-AppShell-main {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .app-stage > .mantine-Container-root {
+    padding-inline: 16px;
+  }
+
   .shell-header-inner {
     margin-top: 0;
     border-radius: 0;
