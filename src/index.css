@@ -617,6 +617,7 @@ a {
 .mantine-Select-input,
 .mantine-Input-input {
   min-height: 48px;
+  font-size: 16px;
   background: #ffffff;
   border: 1px solid rgba(109, 92, 232, 0.14);
   border-radius: 14px;
