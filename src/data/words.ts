@@ -1,12 +1,12 @@
-import type { LevelId, QuizQuestion, WordEntry } from './types';
-import { beginnerUnit1, beginnerUnit1Words } from './words/beginner/unit1';
-import { beginnerUnit2, beginnerUnit2Words } from './words/beginner/unit2';
-import { beginnerUnit3, beginnerUnit3Words } from './words/beginner/unit3';
-import { beginnerUnit4, beginnerUnit4Words } from './words/beginner/unit4';
-
+import type { LevelId, QuizQuestion, WordEntry } from "./types";
+import { beginnerUnit1, beginnerUnit1Words } from "./words/beginner/unit1";
+import { beginnerUnit2, beginnerUnit2Words } from "./words/beginner/unit2";
+import { beginnerUnit3, beginnerUnit3Words } from "./words/beginner/unit3";
+import { beginnerUnit4, beginnerUnit4Words } from "./words/beginner/unit4";
+import { beginnerUnit5, beginnerUnit5Words } from "./words/beginner/unit5";
 
 export const levelLabels: Record<LevelId, string> = {
-  beginner: 'Beginner'
+  beginner: "Beginner",
   // elementary: 'Elementary',
   // intermediate: 'Intermediate',
 };
@@ -15,7 +15,8 @@ export const units = [
   beginnerUnit1,
   beginnerUnit2,
   beginnerUnit3,
-  beginnerUnit4
+  beginnerUnit4,
+  beginnerUnit5,
   // elementaryUnit1,
   // elementaryUnit2,
   // intermediateUnit1,
@@ -26,7 +27,8 @@ export const words: WordEntry[] = [
   ...beginnerUnit1Words,
   ...beginnerUnit2Words,
   ...beginnerUnit3Words,
-  ...beginnerUnit4Words
+  ...beginnerUnit4Words,
+  ...beginnerUnit5Words,
 ];
 
 export function getUnitById(unitId: string) {
@@ -45,17 +47,24 @@ export function getWordsByUnit(unitId: string) {
   return words.filter((word) => word.unitId === unitId);
 }
 
-export function getRandomQuizQuestions(sourceWords: WordEntry[], total = 10): QuizQuestion[] {
+export function getRandomQuizQuestions(
+  sourceWords: WordEntry[],
+  total = 10,
+): QuizQuestion[] {
   const availableWords = sourceWords.length > 0 ? sourceWords : words;
   const questionCount = Math.min(total, availableWords.length);
-  const shuffled = [...availableWords].sort(() => Math.random() - 0.5).slice(0, questionCount);
+  const shuffled = [...availableWords]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, questionCount);
 
   return shuffled.map((word, index) => {
-    const direction = index % 2 === 0 ? 'en-to-kk' : 'kk-to-en';
-    const correctAnswer = direction === 'en-to-kk' ? word.kk : word.en;
-    const prompt = direction === 'en-to-kk' ? word.en : word.kk;
+    const direction = index % 2 === 0 ? "en-to-kk" : "kk-to-en";
+    const correctAnswer = direction === "en-to-kk" ? word.kk : word.en;
+    const prompt = direction === "en-to-kk" ? word.en : word.kk;
     const distractors = getQuizDistractors(word, direction, availableWords);
-    const options = shuffleArray([...new Set([...distractors, correctAnswer])]).slice(0, 4);
+    const options = shuffleArray([
+      ...new Set([...distractors, correctAnswer]),
+    ]).slice(0, 4);
 
     return {
       prompt,
@@ -66,7 +75,10 @@ export function getRandomQuizQuestions(sourceWords: WordEntry[], total = 10): Qu
   });
 }
 
-export function getWrittenQuizQuestions(sourceWords: WordEntry[], total = 10): QuizQuestion[] {
+export function getWrittenQuizQuestions(
+  sourceWords: WordEntry[],
+  total = 10,
+): QuizQuestion[] {
   const availableWords = sourceWords.length > 0 ? sourceWords : words;
   const questionCount = Math.min(total, availableWords.length);
   const shuffled = shuffleArray(availableWords).slice(0, questionCount);
@@ -75,19 +87,23 @@ export function getWrittenQuizQuestions(sourceWords: WordEntry[], total = 10): Q
     prompt: word.kk,
     correctAnswer: word.en,
     options: [],
-    direction: 'kk-to-en',
+    direction: "kk-to-en",
   }));
 }
 
 function getQuizDistractors(
   word: WordEntry,
-  direction: QuizQuestion['direction'],
-  sourceWords: WordEntry[]
+  direction: QuizQuestion["direction"],
+  sourceWords: WordEntry[],
 ) {
-  const answerValue = direction === 'en-to-kk' ? word.kk : word.en;
+  const answerValue = direction === "en-to-kk" ? word.kk : word.en;
   const sourcePool = sourceWords.filter((item) => item.id !== word.id);
-  const levelPool = words.filter((item) => item.id !== word.id && item.level === word.level);
-  const unitPool = words.filter((item) => item.id !== word.id && item.unitId === word.unitId);
+  const levelPool = words.filter(
+    (item) => item.id !== word.id && item.level === word.level,
+  );
+  const unitPool = words.filter(
+    (item) => item.id !== word.id && item.unitId === word.unitId,
+  );
   const fallbackPool = words.filter((item) => item.id !== word.id);
 
   const mergedCandidates = uniqueWords([
@@ -102,9 +118,9 @@ function getQuizDistractors(
       candidate,
       score: getDistractorScore(
         answerValue,
-        direction === 'en-to-kk' ? candidate.kk : candidate.en,
+        direction === "en-to-kk" ? candidate.kk : candidate.en,
         candidate,
-        word
+        word,
       ),
     }))
     .sort((left, right) => right.score - left.score);
@@ -113,17 +129,31 @@ function getQuizDistractors(
     .slice(0, 8)
     .sort(() => Math.random() - 0.5)
     .slice(0, 3)
-    .map(({ candidate }) => (direction === 'en-to-kk' ? candidate.kk : candidate.en));
+    .map(({ candidate }) =>
+      direction === "en-to-kk" ? candidate.kk : candidate.en,
+    );
 }
 
-function getDistractorScore(answer: string, candidateValue: string, candidate: WordEntry, currentWord: WordEntry) {
+function getDistractorScore(
+  answer: string,
+  candidateValue: string,
+  candidate: WordEntry,
+  currentWord: WordEntry,
+) {
   const normalizedAnswer = answer.toLowerCase();
   const normalizedCandidate = candidateValue.toLowerCase();
   const answerTokens = normalizedAnswer.split(/\s+/).filter(Boolean);
   const candidateTokens = normalizedCandidate.split(/\s+/).filter(Boolean);
-  const sharedTokenCount = candidateTokens.filter((token) => answerTokens.includes(token)).length;
-  const sharedPrefixLength = getSharedPrefixLength(normalizedAnswer, normalizedCandidate);
-  const lengthDistance = Math.abs(normalizedAnswer.length - normalizedCandidate.length);
+  const sharedTokenCount = candidateTokens.filter((token) =>
+    answerTokens.includes(token),
+  ).length;
+  const sharedPrefixLength = getSharedPrefixLength(
+    normalizedAnswer,
+    normalizedCandidate,
+  );
+  const lengthDistance = Math.abs(
+    normalizedAnswer.length - normalizedCandidate.length,
+  );
 
   let score = 0;
 
