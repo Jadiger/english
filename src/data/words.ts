@@ -4,6 +4,7 @@ import { beginnerUnit2, beginnerUnit2Words } from "./words/beginner/unit2";
 import { beginnerUnit3, beginnerUnit3Words } from "./words/beginner/unit3";
 import { beginnerUnit4, beginnerUnit4Words } from "./words/beginner/unit4";
 import { beginnerUnit5, beginnerUnit5Words } from "./words/beginner/unit5";
+import { beginnerUnit9, beginnerUnit9Words } from "./words/beginner/unit9";
 
 export const levelLabels: Record<LevelId, string> = {
   beginner: "Beginner",
@@ -17,6 +18,7 @@ export const units = [
   beginnerUnit3,
   beginnerUnit4,
   beginnerUnit5,
+  beginnerUnit9
   // elementaryUnit1,
   // elementaryUnit2,
   // intermediateUnit1,
@@ -29,6 +31,7 @@ export const words: WordEntry[] = [
   ...beginnerUnit3Words,
   ...beginnerUnit4Words,
   ...beginnerUnit5Words,
+  ...beginnerUnit9Words
 ];
 
 export function getUnitById(unitId: string) {
